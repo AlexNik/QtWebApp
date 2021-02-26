@@ -17,6 +17,8 @@ project, the preferred method.
 Demo2 shows how to link against the shared library.
 Build the project QtWebApp to generate the shared library.
 
+Demo3 shows how to check headers before the reading request body.
+Build the project QtWebApp to generate the shared library.
 
 Stefan Frings
 http://stefanfrings.de
