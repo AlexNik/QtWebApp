@@ -10,7 +10,7 @@
 
 using namespace stefanfrings;
 
-HttpRequest::HttpRequest(const QSettings* settings)
+HttpRequest::HttpRequest(const QSettings* settings, const HeadersHandler& headersHandler)
 {
     status=waitForRequest;
     currentSize=0;
@@ -18,6 +18,8 @@ HttpRequest::HttpRequest(const QSettings* settings)
     maxSize=settings->value("maxRequestSize","16000").toInt();
     maxMultiPartSize=settings->value("maxMultiPartSize","1000000").toInt();
     tempFile=nullptr;
+    this->headersHandler=headersHandler;
+    wasHeadersHandled=false;
 }
 
 
@@ -301,6 +303,21 @@ void HttpRequest::readFromSocket(QTcpSocket* socket)
     }
     else if (status==waitForBody)
     {
+        if (!wasHeadersHandled) {
+          wasHeadersHandled = true;
+
+          auto &[handlers, errorHandler] = headersHandler;
+
+          for (const auto &handler : handlers) {
+            if (const auto [isOk, httpError] = handler(headers); !isOk) {
+              status = wrongHeaders;
+              errorHandler(httpError);
+              this->httpError = errorHandler;
+              return;
+            }
+          }
+        }
+
         readBody(socket);
     }
     if ((boundary.isEmpty() && currentSize>maxSize) || (!boundary.isEmpty() && currentSize>maxMultiPartSize))
@@ -577,3 +594,7 @@ QHostAddress HttpRequest::getPeerAddress() const
     return peerAddress;
 }
 
+const HttpError& stefanfrings::HttpRequest::getHttpError() const
+{
+    return httpError;
+}

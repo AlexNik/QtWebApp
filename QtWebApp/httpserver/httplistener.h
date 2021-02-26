@@ -75,6 +75,12 @@ public:
     */
     void close();
 
+    /**
+     * @brief Set handlers for headers checking of incomming connections.
+     * @param headersHandler Rules for checking headers.
+     */
+    void setHeadersHandler(const HeadersHandler &headersHandler);
+
 protected:
 
     /** Serves new incoming connection requests */
@@ -90,6 +96,9 @@ private:
 
     /** Pool of connection handlers */
     HttpConnectionHandlerPool* pool;
+
+    /** Handlers for headers checking of incomming connections */
+    HeadersHandler headersHandler;
 
 signals:
 

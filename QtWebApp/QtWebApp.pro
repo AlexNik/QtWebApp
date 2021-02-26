@@ -5,10 +5,11 @@ VERSION = 1.8.1
 TEMPLATE = lib
 QT -= gui
 
+CONFIG += c++1z
+
 mac {
    QMAKE_MAC_SDK = macosx10.10
-   QMAKE_CXXFLAGS += -std=c++11
-   CONFIG += c++11
+   QMAKE_CXXFLAGS += -std=c++17
    QMAKE_LFLAGS_SONAME  = -Wl,-install_name,/usr/local/lib/
 }
 
